@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Jogo da Cobrinea</title>
+</head>
+<body>
+<canvas id="Cobrinea" width="800" height="700"></canvas>
+<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.15/howler.min.js"></script> 
+<script>
+
+window.onload=function(){
+	canv=document.getElementById("Cobrinea");
+	ctx=canv.getContext("2d");
+	document.addEventListener("keydown", keyPush);
+	setInterval(game,1000/15);
+}
+
+PosiçãoX=PosiçãoY=1;
+Zoom=20;
+TamanhoCanvas=34;
+PosiçãoXComida=PosiçãoYComida=15;
+OrigemXCobra=OrigemYCobra=0;
+Corpo=[];
+TamanhoInicialCobra = 5;
+PosiçãoXObstaculo=[];
+PosiçãoYObstaculo=[];
+indice=0;
+
+	var parabains = new Howl({
+        src: ['parabains.mp3'],
+        volume: 0.2
+      });
+	  var errou = new Howl({
+        src: ['errou.mp3'],
+        volume: 0.8
+      });
+      var tutu = new Howl({
+        src: ['tutu.mp3'],
+		
+        volume: 0.5
+      });
+
+
+var intervalo2=window.setInterval(musicas,1000);
+function musicas() {
+tutu.play();
+ctx.beginPath();    
+	ctx.arc(750,350,20,0,2*Math.PI); //desenha botao
+	ctx.fillStyle='blue';
+	ctx.strokeStyle = 'black'  
+    ctx.moveTo(750,350);  
+	ctx.lineTo(750,450) ; 
+	ctx.moveTo(750,450);
+	ctx.lineTo(730,550) ;
+	ctx.moveTo(750,450);
+	ctx.lineTo(770,550);
+	ctx.moveTo(750,380);
+	ctx.lineTo(720,380);
+	ctx.moveTo(750,380);
+	ctx.lineTo(780,380);
+	
+
+	var kk=window.setInterval(braço1cima,1000);
+	var qq=window.setInterval(braço2cima,1000);
+	
+	var hh=window.setInterval(apagarbraço1cima,1500);
+	var hhh=window.setInterval(apagarbraço2cima,1500);
+	
+	function braço1cima(){	
+	ctx.beginPath(); 
+	ctx.strokeStyle='black';
+	ctx.moveTo(720,380);
+	ctx.lineTo(720,300);
+	ctx.stroke(); //liga
+ctx.fill();     //preenche
+ctx.closePath(); //termina desenho
+}
+function apagarbraço1cima(){
+	ctx.beginPath(); 
+	ctx.clearRect(710,300,15,79);
+	ctx.closePath(); //termina desenho
+	
+}
+function apagarbraço2cima(){
+	ctx.beginPath(); 
+	ctx.clearRect(770,300,15,79);
+	ctx.closePath(); //termina desenho
+
+}
+	function braço2cima(){
+		
+	ctx.beginPath(); 
+	ctx.strokeStyle='black';
+	ctx.moveTo(780,380);
+	ctx.lineTo(780,300);
+	ctx.stroke(); //liga
+ctx.fill();     //preenche
+ctx.closePath(); //termina desenho
+}
+
+ctx.stroke(); //liga
+ctx.fill();     //preenche
+ctx.closePath(); //termina desenho
+	
+
+
+}
+function game() {
+
+
+	PosiçãoX=PosiçãoX+OrigemXCobra;
+	PosiçãoY=PosiçãoY+OrigemYCobra;
+    
+	if(PosiçãoX<0){
+		PosiçãoX=TamanhoCanvas-1;
+	}
+	if(PosiçãoX>TamanhoCanvas-1){
+		PosiçãoX= 0;
+	}
+	if(PosiçãoY<0){
+		PosiçãoY=TamanhoCanvas-1;
+	}
+	if(PosiçãoY>TamanhoCanvas-1){
+		PosiçãoY= 0;
+	}
+	ctx.fillStyle="#00cc44";
+	ctx.fillRect(0,0,700,700);
+	ctx.fillStyle="#006622";
+
+	for(var i=0;i<Corpo.length;i++) {
+        	ctx.fillRect(Corpo[i].x*Zoom,Corpo[i].y*Zoom,Zoom-2,Zoom-2);
+       
+    	}
+    	
+	Corpo.push({x:PosiçãoX,y:PosiçãoY});
+    	
+	while(Corpo.length>TamanhoInicialCobra) {
+    		Corpo.shift();
+    	}
+    	if(PosiçãoXComida==PosiçãoX && PosiçãoYComida==PosiçãoY ) {	
+			parabains.play();
+            indice++;
+            TamanhoInicialCobra++;
+        	PosiçãoXComida=Math.floor(Math.random()*TamanhoCanvas);
+        	PosiçãoYComida=Math.floor(Math.random()*TamanhoCanvas);
+            PosiçãoXObstaculo[indice]=Math.floor(Math.random()*TamanhoCanvas);
+            PosiçãoYObstaculo[indice]=Math.floor(Math.random()*TamanhoCanvas);
+            
+    	}
+    	ctx.fillStyle="red";
+        ctx.fillRect(PosiçãoXComida*Zoom,PosiçãoYComida*Zoom,Zoom-2,Zoom-2);
+        ctx.fillStyle="Black";
+        for(var i=0 ;i<indice;i++){
+            ctx.fillRect(PosiçãoXObstaculo[i+1]*Zoom,PosiçãoYObstaculo[i+1]*Zoom,Zoom-2,Zoom-2);
+            }
+        
+        for(var i=0;i<indice+1;i++){
+            if(PosiçãoXObstaculo[i]==PosiçãoX && PosiçãoYObstaculo[i]==PosiçãoY ) {
+				errou.play();
+                       TamanhoInicialCobra--;
+                       Corpo.length--;
+					diminuiu_sound.play();
+                       }
+                   }  
+                   if(TamanhoInicialCobra==0){
+                        ctx.font="25px Georgia";
+                        ctx.fillText("Perdeste",350,350); //texto de esconder pontos 
+                }
+           }
+        
+
+function keyPush(evt) {
+	switch(evt.keyCode) {
+	   case 37:
+		OrigemXCobra=-1;OrigemYCobra=0;
+		break;
+	   case 38:
+		OrigemXCobra=0;OrigemYCobra=-1;
+		break;
+	   case 39:
+		OrigemXCobra=1;OrigemYCobra=0;
+		break;
+	   case 40:
+		OrigemXCobra=0;OrigemYCobra=1;
+		break;
+	}
+}
+  </script>
+</body>
+</html>
